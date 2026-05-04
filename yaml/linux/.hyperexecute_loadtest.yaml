@@ -17,8 +17,8 @@ cacheDirectories:
 testDiscovery:
   type: raw
   mode: dynamic
-  command: grep -nri 'describe' tests/loadtest_storyblock.spec.js | sed 's/:test.*//'
-testRunnerCommand: npx playwright test $test
+  command: seq 1 10
+testRunnerCommand: npx playwright test tests/loadtest_storyblock.spec.js --shard=$test/10
 jobLabel: [playwright-VanillaJS, linux, loadtest, web-vitals]
 artifacts:
   name: web-vitals-results

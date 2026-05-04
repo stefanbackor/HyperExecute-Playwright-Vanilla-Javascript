@@ -317,9 +317,9 @@ The "load" comes from HyperExecute's `concurrency:` setting — each shard opens
 
 ### Files
 
-- `tests/loadtest_storyblock.spec.js` — generates 10 `describe` blocks (one per virtual user). Adjust the `RUNS` constant to scale; bump `concurrency` in the YAML to match.
+- `tests/loadtest_storyblock.spec.js` — generates 10 `describe` blocks (one per virtual user) and enables `mode: 'parallel'` so Playwright's `--shard` flag distributes them per-test.
 - `utils/web-vitals-helper.js` — injects the `web-vitals@4` library from CDN and reads metrics after the page settles.
-- `yaml/linux/.hyperexecute_loadtest.yaml` — dedicated HyperExecute config (`concurrency: 10`, scoped `testDiscovery`, `artifacts:` block to download the JSONs).
+- `yaml/linux/.hyperexecute_loadtest.yaml` — dedicated HyperExecute config (`concurrency: 10`, `testDiscovery: seq 1 10`, `--shard=$test/10`, `artifacts:` block to download the JSONs).
 - `playwright.config.js` — adds a `chromium-local` project so the test can run locally without LambdaTest credentials.
 
 ### Run locally (no LambdaTest cloud needed)
@@ -364,11 +364,12 @@ npx playwright test tests/loadtest_storyblock.spec.js \
 
 This spawns 10 concurrent LambdaTest sessions. Each shard's JSON is uploaded as the `web-vitals-results` artifact — download the artifact zip from the HyperExecute job page to get all 10 results.
 
-To scale to more virtual users, change both:
-- `RUNS` in `tests/loadtest_storyblock.spec.js`
-- `concurrency:` in `yaml/linux/.hyperexecute_loadtest.yaml`
+To scale to more virtual users, update three places to the same `N`:
+- `RUNS` constant in `tests/loadtest_storyblock.spec.js`
+- `seq 1 N` and `--shard=$test/N` in `yaml/linux/.hyperexecute_loadtest.yaml`
+- `concurrency: N` in `yaml/linux/.hyperexecute_loadtest.yaml`
 
-(Autosplit needs one `describe` per shard, so the two values should match.)
+(HyperExecute autosplit emits one shard index per line from `seq`, so the three numbers must match.)
 
 ### Limitations
 

@@ -7,6 +7,9 @@ const path = require('path')
 const RUNS = 10
 const URL = 'https://zeffo-git-demo-load-test-page-firework.vercel.app/loadtest-storyblock.html'
 
+// Distribute tests per-test across `--shard=N/M`; default (serial) shards by file.
+test.describe.configure({ mode: 'parallel' })
+
 for (let i = 1; i <= RUNS; i++) {
   const idx = String(i).padStart(2, '0')
 
