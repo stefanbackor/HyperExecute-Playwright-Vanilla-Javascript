@@ -20,8 +20,22 @@ testDiscovery:
   command: seq 1 10
 testRunnerCommand: npx playwright test tests/loadtest_storyblock.spec.js --shard=$test/10
 jobLabel: [playwright-VanillaJS, linux, loadtest, web-vitals]
-artifacts:
-  name: web-vitals-results
-  path:
-    - artifacts/loadtest/**/*.json
-    - test-results/**/*
+
+report: true
+partialReports:
+  location: playwright-report
+  type: html
+  frameworkName: playwright
+
+mergeArtifacts: true
+taskIdentifierInNonConflictingArtifacts: true
+uploadArtefacts:
+  - name: web-vitals-json
+    path:
+      - artifacts/loadtest/**/*.json
+  - name: playwright-report
+    path:
+      - playwright-report/**/*
+  - name: test-results
+    path:
+      - test-results/**/*

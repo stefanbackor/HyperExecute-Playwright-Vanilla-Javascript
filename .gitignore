@@ -10,5 +10,6 @@ cucumber_context.json
 hyperexecuteupdate
 node_modules/
 test-results/
+playwright-report/
 LT
 LT.exe

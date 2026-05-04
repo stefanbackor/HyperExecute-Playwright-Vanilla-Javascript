@@ -9,6 +9,11 @@ const config = {
     viewport: null
   },
   workers: 1,
+  reporter: [
+    ['list'],
+    ['html', { outputFolder: 'playwright-report', open: 'never' }],
+    ['json', { outputFile: 'playwright-report/results.json' }]
+  ],
   projects: [
     {
       name: 'chrome:latest@lambdatest',

@@ -319,8 +319,8 @@ The "load" comes from HyperExecute's `concurrency:` setting — each shard opens
 
 - `tests/loadtest_storyblock.spec.js` — generates 10 `describe` blocks (one per virtual user) and enables `mode: 'parallel'` so Playwright's `--shard` flag distributes them per-test.
 - `utils/web-vitals-helper.js` — injects the `web-vitals@4` library from CDN and reads metrics after the page settles.
-- `yaml/linux/.hyperexecute_loadtest.yaml` — dedicated HyperExecute config (`concurrency: 10`, `testDiscovery: seq 1 10`, `--shard=$test/10`, `artifacts:` block to download the JSONs).
-- `playwright.config.js` — adds a `chromium-local` project so the test can run locally without LambdaTest credentials.
+- `yaml/linux/.hyperexecute_loadtest.yaml` — dedicated HyperExecute config (`concurrency: 10`, `testDiscovery: seq 1 10`, `--shard=$test/10`, `report:` + `uploadArtefacts:` blocks).
+- `playwright.config.js` — adds a `chromium-local` project for local runs and configures `list` + `html` + `json` reporters so HyperExecute's `report:` directive has a `playwright-report/` folder to consume.
 
 ### Run locally (no LambdaTest cloud needed)
 
@@ -359,10 +359,18 @@ npx playwright test tests/loadtest_storyblock.spec.js \
 
 ```bash
 ./hyperexecute --user $LT_USERNAME --key $LT_ACCESS_KEY \
-  --config yaml/linux/.hyperexecute_loadtest.yaml
+  --config yaml/linux/.hyperexecute_loadtest.yaml \
+  --download-report \
+  --download-artifacts-zip
 ```
 
-This spawns 10 concurrent LambdaTest sessions. Each shard's JSON is uploaded as the `web-vitals-results` artifact — download the artifact zip from the HyperExecute job page to get all 10 results.
+This spawns 10 concurrent LambdaTest sessions. After the run completes:
+
+- `--download-report` pulls the consolidated HTML report (Playwright HTML, merged across shards) configured by the YAML's `report:` + `partialReports:` block. View it via the HyperExecute job page or open the downloaded `index.html` locally.
+- `--download-artifacts-zip` pulls a single zip containing the three named artifact groups declared under `uploadArtefacts:`:
+  - **web-vitals-json** — `artifacts/loadtest/run-NN-*.json` from every shard (merged because `mergeArtifacts: true`)
+  - **playwright-report** — full `playwright-report/` folder per shard
+  - **test-results** — Playwright's per-test traces, screenshots, and `results.json`
 
 To scale to more virtual users, update three places to the same `N`:
 - `RUNS` constant in `tests/loadtest_storyblock.spec.js`
