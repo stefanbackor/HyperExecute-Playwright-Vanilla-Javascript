@@ -8,5 +8,7 @@ nucleus.log
 artifacts
 cucumber_context.json
 hyperexecuteupdate
+node_modules/
+test-results/
 LT
 LT.exe

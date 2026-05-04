@@ -46,6 +46,12 @@ If not signed up, you need to sign up and simultaneously redirected to Gitpod in
    - [Test Execution](#test-execution-1)
 
 * [Run Playwright-JS tests on Windows and Linux platforms](#run-Playwright-JS-tests-on-windows-and-linux-platforms)
+* [Web Vitals Load Test](#web-vitals-load-test)
+   - [Files](#files)
+   - [Run locally (no LambdaTest cloud needed)](#run-locally-no-lambdatest-cloud-needed)
+   - [Run a single session against LambdaTest](#run-a-single-session-against-lambdatest)
+   - [Run the full load test on HyperExecute](#run-the-full-load-test-on-hyperexecute)
+   - [Limitations](#limitations)
 * [Secrets Management](#secrets-management)
 * [Navigation in Automation Dashboard](#navigation-in-automation-dashboard)
 
@@ -302,6 +308,72 @@ Run the following command on the terminal to trigger tests on Linux platform:
 ```bash
 ./hyperexecute --config --verbose yaml/win/.hyperexecute_autosplits.yaml
 ```
+
+## Web Vitals Load Test
+
+This repo includes a dedicated load test that opens `https://zeffo-git-demo-load-test-page-firework.vercel.app/loadtest-storyblock.html` from N concurrent LambdaTest browser sessions and captures Core Web Vitals (LCP, CLS, INP) plus FCP and TTFB for each session. Each session writes a JSON artifact under `artifacts/loadtest/`.
+
+The "load" comes from HyperExecute's `concurrency:` setting — each shard opens its own real browser session, so `concurrency: 10` produces 10 simultaneous sessions hitting the page.
+
+### Files
+
+- `tests/loadtest_storyblock.spec.js` — generates 10 `describe` blocks (one per virtual user). Adjust the `RUNS` constant to scale; bump `concurrency` in the YAML to match.
+- `utils/web-vitals-helper.js` — injects the `web-vitals@4` library from CDN and reads metrics after the page settles.
+- `yaml/linux/.hyperexecute_loadtest.yaml` — dedicated HyperExecute config (`concurrency: 10`, scoped `testDiscovery`, `artifacts:` block to download the JSONs).
+- `playwright.config.js` — adds a `chromium-local` project so the test can run locally without LambdaTest credentials.
+
+### Run locally (no LambdaTest cloud needed)
+
+The `chromium-local` Playwright project runs the test against a local Chromium browser, useful for fast iteration without burning LT minutes:
+
+```bash
+npx playwright install            # one-time
+npx playwright test tests/loadtest_storyblock.spec.js \
+  --project=chromium-local \
+  --workers=4
+```
+
+After the run, inspect the JSON artifacts:
+
+```bash
+ls artifacts/loadtest/
+cat artifacts/loadtest/run-01-*.json
+```
+
+Each file contains:
+- `vitals.{LCP,FCP,CLS,INP,TTFB}` — value, rating, id
+- `nav` — full `PerformanceNavigationTiming` entry
+- `runIndex`, `testName`, `startedAt`, `durationMs`, `url`, `userAgent`
+
+### Run a single session against LambdaTest
+
+```bash
+export LT_USERNAME=...
+export LT_ACCESS_KEY=...
+npx playwright test tests/loadtest_storyblock.spec.js \
+  --project='chrome:latest@lambdatest' \
+  --grep 'run 01'
+```
+
+### Run the full load test on HyperExecute
+
+```bash
+./hyperexecute --user $LT_USERNAME --key $LT_ACCESS_KEY \
+  --config yaml/linux/.hyperexecute_loadtest.yaml
+```
+
+This spawns 10 concurrent LambdaTest sessions. Each shard's JSON is uploaded as the `web-vitals-results` artifact — download the artifact zip from the HyperExecute job page to get all 10 results.
+
+To scale to more virtual users, change both:
+- `RUNS` in `tests/loadtest_storyblock.spec.js`
+- `concurrency:` in `yaml/linux/.hyperexecute_loadtest.yaml`
+
+(Autosplit needs one `describe` per shard, so the two values should match.)
+
+### Limitations
+
+- **INP requires a real interaction.** The helper triggers a synthetic `mouse.click` at coordinates (200, 200), which usually qualifies; on some pages it may not, in which case INP can be missing for that run.
+- **`networkidle` may not fully settle** on video-heavy pages — the helper waits up to 30s and proceeds with a 5s post-settle timer regardless.
 
 ## Secrets Management
 
