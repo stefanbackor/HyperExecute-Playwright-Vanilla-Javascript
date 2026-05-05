@@ -19,14 +19,17 @@ cacheDirectories:
   - node_modules
   - ms-playwright
 testSuites:
-  - npx playwright test tests/loadtest_storyblock.spec.js
-post:
-  # Custom HTML report — written to loadtest-html-report/index.html so it can be
-  # exposed via partialReports below and opened directly from the LambdaTest
-  # dashboard. Each worker generates its own (covers only that worker's runs);
-  # for a single merged report across workers, run `npm run loadtest:report`
-  # locally after downloading the merged `web-vitals-json` artifact bundle.
-  - node utils/generate-loadtest-report.js || true
+  # Generate the custom HTML report INSIDE the test suite so the file is on
+  # disk before HyperExecute collects partialReports. (Running it from `post`
+  # caused the dashboard to show "report generation scheduled" — the file
+  # wasn't there when the report scheduler looked.)
+  # The report is written to two locations:
+  #   1. loadtest-html-report/index.html — its own dashboard "Report" entry
+  #   2. playwright-report/loadtest-report.html — fallback, always reachable
+  #      under the Playwright report URL (e.g. <playwright-report>/loadtest-report.html)
+  # `;` (not `&&`) so the report is generated even when Playwright reports
+  # failures; trailing exit preserves Playwright's exit code.
+  - bash -c 'npx playwright test tests/loadtest_storyblock.spec.js; rc=$?; node utils/generate-loadtest-report.js || true; mkdir -p playwright-report && cp loadtest-html-report/index.html playwright-report/loadtest-report.html 2>/dev/null || true; exit $rc'
 jobLabel: [playwright-VanillaJS, linux, loadtest, web-vitals]
 
 report: true
