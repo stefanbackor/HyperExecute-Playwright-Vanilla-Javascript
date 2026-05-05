@@ -7,10 +7,9 @@ runson: linux
 autosplit: true
 retryOnFailure: false
 maxRetries: 0
-concurrency: ${CONCURRENCY:-2}
+concurrency: 2
 env:
   URL: $URL
-  CONCURRENCY: ${CONCURRENCY:-2}
 pre:
   - npm install
   - npx playwright install
@@ -20,7 +19,7 @@ cacheDirectories:
 testDiscovery:
   type: raw
   mode: dynamic
-  command: seq 1 ${CONCURRENCY:-2}
+  command: seq 1 2
 testRunnerCommand: npx playwright test tests/loadtest_storyblock.spec.js
 jobLabel: [playwright-VanillaJS, linux, loadtest, web-vitals]
 
