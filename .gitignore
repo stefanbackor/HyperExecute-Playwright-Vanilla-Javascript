@@ -11,5 +11,6 @@ hyperexecuteupdate
 node_modules/
 test-results/
 playwright-report/
+loadtest-html-report/
 LT
 LT.exe

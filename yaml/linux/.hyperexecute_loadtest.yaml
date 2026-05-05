@@ -10,22 +10,32 @@ maxRetries: 0
 concurrency: 2
 pre:
   - npm install
-  - npx playwright install
+  - npx playwright install --with-deps chromium
 cacheKey: '{{ checksum "package-lock.json" }}'
 cacheDirectories:
   - node_modules
+  - /home/ltuser/.cache/ms-playwright
 testDiscovery:
   type: raw
   mode: dynamic
   command: seq 1 2
 testRunnerCommand: npx playwright test tests/loadtest_storyblock.spec.js
+post:
+  # Custom HTML report — written to loadtest-html-report/index.html so it can be
+  # exposed via partialReports below and opened directly from the LambdaTest
+  # dashboard. Each worker generates its own (covers only that worker's runs);
+  # for a single merged report across workers, run `npm run loadtest:report`
+  # locally after downloading the merged `web-vitals-json` artifact bundle.
+  - node utils/generate-loadtest-report.js || true
 jobLabel: [playwright-VanillaJS, linux, loadtest, web-vitals]
 
 report: true
 partialReports:
-  location: playwright-report
-  type: html
-  frameworkName: playwright
+  - location: playwright-report
+    type: html
+    frameworkName: playwright
+  - location: loadtest-html-report
+    type: html
 
 mergeArtifacts: true
 taskIdentifierInNonConflictingArtifacts: true
@@ -33,6 +43,9 @@ uploadArtefacts:
   - name: web-vitals-json
     path:
       - artifacts/loadtest/**/*.json
+  - name: loadtest-html-report
+    path:
+      - loadtest-html-report/**/*
   - name: playwright-report
     path:
       - playwright-report/**/*
