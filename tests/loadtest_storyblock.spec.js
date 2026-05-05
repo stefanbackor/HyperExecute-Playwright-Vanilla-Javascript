@@ -27,8 +27,10 @@ for (let i = 1; i <= RUNS; i++) {
 
       const t0 = Date.now();
       await page.goto(TARGET_URL, { waitUntil: "load", timeout: 60_000 });
-      const result = await collectWebVitals(page);
-      const fwVideoStart = await waitForFwVideoStart(page, { timeout: 30_000 });
+      const [result, fwVideoStart] = await Promise.all([
+        collectWebVitals(page),
+        waitForFwVideoStart(page, { timeout: 30_000 }),
+      ]);
 
       const out = {
         runIndex: i,

@@ -4,10 +4,11 @@ globalTimeout: 150
 testSuiteTimeout: 150
 testSuiteStep: 150
 runson: linux
-autosplit: true
 retryOnFailure: false
 maxRetries: 0
 concurrency: 2
+matrix:
+  worker: [1, 2]
 pre:
   - npm install
   - npx playwright install --with-deps chromium
@@ -15,11 +16,8 @@ cacheKey: '{{ checksum "package-lock.json" }}'
 cacheDirectories:
   - node_modules
   - /home/ltuser/.cache/ms-playwright
-testDiscovery:
-  type: raw
-  mode: dynamic
-  command: seq 1 2
-testRunnerCommand: npx playwright test tests/loadtest_storyblock.spec.js
+testSuites:
+  - npx playwright test tests/loadtest_storyblock.spec.js
 post:
   # Custom HTML report — written to loadtest-html-report/index.html so it can be
   # exposed via partialReports below and opened directly from the LambdaTest
