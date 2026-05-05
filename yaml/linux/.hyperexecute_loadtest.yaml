@@ -9,13 +9,15 @@ maxRetries: 0
 concurrency: 2
 matrix:
   worker: [1, 2]
+env:
+  PLAYWRIGHT_BROWSERS_PATH: $PWD/ms-playwright
 pre:
-  - npm install
-  - npx playwright install --with-deps chromium
+  - test -d node_modules || npm ci --prefer-offline --no-audit
+  - test -d "$PWD/ms-playwright" || npx playwright install --with-deps chromium
 cacheKey: '{{ checksum "package-lock.json" }}'
 cacheDirectories:
   - node_modules
-  - /home/ltuser/.cache/ms-playwright
+  - ms-playwright
 testSuites:
   - npx playwright test tests/loadtest_storyblock.spec.js
 post:
