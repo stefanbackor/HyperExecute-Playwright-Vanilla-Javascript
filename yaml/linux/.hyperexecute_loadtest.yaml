@@ -8,8 +8,6 @@ autosplit: true
 retryOnFailure: false
 maxRetries: 0
 concurrency: 2
-env:
-  URL: $URL
 pre:
   - npm install
   - npx playwright install
