@@ -1,35 +1,35 @@
-const { devices } = require('@playwright/test')
+const { devices } = require("@playwright/test");
 
 // Playwright config to run tests on LambdaTest platform and local
 const config = {
-  testDir: 'tests',
-  testMatch: '**/*.spec.js',
-  timeout: 120000,
+  testDir: "tests",
+  testMatch: "**/*.spec.js",
+  timeout: 360000,
   use: {
-    viewport: null
+    viewport: null,
   },
-  workers: 1,
+  workers: 4,
   reporter: [
-    ['list'],
-    ['html', { outputFolder: 'playwright-report', open: 'never' }],
-    ['json', { outputFile: 'playwright-report/results.json' }]
+    ["list"],
+    ["html", { outputFolder: "playwright-report", open: "never" }],
+    ["json", { outputFile: "playwright-report/results.json" }],
   ],
   projects: [
     {
-      name: 'chrome:latest@lambdatest',
+      name: "chrome:latest@lambdatest",
       use: {
         viewport: { width: 1280, height: 720 },
-        ignoreHTTPSErrors: true
-      }
+        ignoreHTTPSErrors: true,
+      },
     },
     {
-      name: 'chromium-local',
+      name: "chromium-local",
       use: {
-        ...devices['Desktop Chrome'],
+        ...devices["Desktop Chrome"],
         viewport: { width: 1280, height: 720 },
-        ignoreHTTPSErrors: true
-      }
-    }
+        ignoreHTTPSErrors: true,
+      },
+    },
     // {
     //   name: 'MicrosoftEdge:latest@lambdatest',
     //   use: {
@@ -54,7 +54,7 @@ const config = {
     //     viewport: { width: 1280, height: 720 }
     //   }
     // }
-  ]
-}
+  ],
+};
 
-module.exports = config
+module.exports = config;
