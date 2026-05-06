@@ -52,6 +52,8 @@ for (let w = 1; w <= WORKERS; w++) {
 
     const t0 = Date.now();
 
+    console.log(`[loadtest] worker ${idx} target URL:`, TARGET_URL);
+
     // Initial navigation: waitUntil 'commit' so client-side redirects
     // (e.g. ?next=live) and slow HLS bootstrap don't block the load event.
     await page.goto(TARGET_URL, { waitUntil: "commit", timeout: 90_000 });
