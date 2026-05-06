@@ -32,7 +32,7 @@ const WORKERS = 4;
 const WARMUP_MS = 60_000;
 const ACTIVE_MS = 120_000;
 const TARGET_URL =
-  process.env.URL ||
+  process.env.LOADTEST_URL ||
   "https://zeffo-git-demo-load-test-page-firework.vercel.app/loadtest-storyblock.html";
 
 test.describe.configure({ mode: "parallel" });
