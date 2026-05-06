@@ -70,6 +70,9 @@ async function waitForCompletePageLoad(page) {
 // "Playing to Buffering" / "Buffering to Playing" console lines that
 // attachBufferingConsoleListener listens for.
 async function activateFireworkConsole(page) {
+  // if (page.url().includes("fwdev_debug")) {
+  //   return { success: true, skipped: "fwdev_debug in url" };
+  // }
   const result = await page.evaluate(() => {
     if (typeof window._fwn === "undefined") {
       return { success: false, error: "_fwn not found" };
