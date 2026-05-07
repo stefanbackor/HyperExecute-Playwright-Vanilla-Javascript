@@ -14,6 +14,7 @@ matrix:
   worker: [1]
 env:
   PLAYWRIGHT_BROWSERS_PATH: $PWD/ms-playwright
+  LOADTEST_URL: https://zeffo-git-demo-load-test-page-firework.vercel.app/loadtest-storyblock.html?yaml
 pre:
   - test -d node_modules || npm ci --prefer-offline --no-audit
   - test -d "$PWD/ms-playwright" || npx playwright install --with-deps chromium
