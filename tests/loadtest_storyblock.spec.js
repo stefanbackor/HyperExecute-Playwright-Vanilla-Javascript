@@ -28,7 +28,7 @@ const { applyNoThrottle } = require("../utils/throttle-helper");
 // watch -> wait for <video>). Per-worker JSON artifact captures the same
 // buffering metric the customer uses to evaluate player performance.
 
-const WORKERS = 1;
+const WORKERS = process.env.CONCURRENCY || 4;
 const WARMUP_MS = 60_000;
 const ACTIVE_MS = 120_000;
 const TARGET_URL =
