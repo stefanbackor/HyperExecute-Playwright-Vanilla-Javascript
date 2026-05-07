@@ -14,7 +14,7 @@ matrix:
   worker: [1]
 env:
   PLAYWRIGHT_BROWSERS_PATH: $PWD/ms-playwright
-  LOADTEST_URL: $LOADTEST_URL
+  LOADTEST_URL: ${LOADTEST_URL}
 pre:
   - test -d node_modules || npm ci --prefer-offline --no-audit
   # - test -d "$PWD/ms-playwright" || npx playwright install --with-deps chromium
