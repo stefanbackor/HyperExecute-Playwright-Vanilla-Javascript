@@ -9,7 +9,8 @@ maxRetries: 0
 # The spec itself spawns 4 parallel cloud sessions via Playwright workers,
 # so HyperExecute only needs a single VM to drive them. Bumping the matrix
 # here would multiply cloud-minute spend without adding coverage.
-concurrency: 5
+concurrency: 10
+autoSplit: true
 # matrix:
   # worker: [1]
 env:
