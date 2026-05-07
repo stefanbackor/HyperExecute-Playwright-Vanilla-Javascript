@@ -10,8 +10,8 @@ maxRetries: 0
 # so HyperExecute only needs a single VM to drive them. Bumping the matrix
 # here would multiply cloud-minute spend without adding coverage.
 concurrency: ${CONCURRENCY}
-matrix:
-  worker: [1]
+# matrix:
+  # worker: [1]
 env:
   PLAYWRIGHT_BROWSERS_PATH: $PWD/ms-playwright
   LOADTEST_URL: ${LOADTEST_URL}
