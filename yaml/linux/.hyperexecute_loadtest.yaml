@@ -14,14 +14,14 @@ matrix:
   worker: [1]
 env:
   PLAYWRIGHT_BROWSERS_PATH: $PWD/ms-playwright
-  LOADTEST_URL: https://zeffo-git-demo-load-test-page-firework.vercel.app/loadtest-storyblock.html?yaml
+  LOADTEST_URL: $LOADTEST_URL
 pre:
   - test -d node_modules || npm ci --prefer-offline --no-audit
-  - test -d "$PWD/ms-playwright" || npx playwright install --with-deps chromium
+  # - test -d "$PWD/ms-playwright" || npx playwright install --with-deps chromium
 cacheKey: '{{ checksum "package-lock.json" }}'
 cacheDirectories:
   - node_modules
-  - ms-playwright
+  # - ms-playwright
 testSuites:
   # Generate the custom HTML report INSIDE the test suite so the file is on
   # disk before HyperExecute collects partialReports. (Running it from `post`
