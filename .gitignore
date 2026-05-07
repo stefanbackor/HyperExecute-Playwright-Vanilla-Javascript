@@ -1,16 +1,10 @@
 .DS_Store
 .hyperexecute/
 .updatedhyperexecute.yaml
-concierge
-concierge.exe
 logs/
-nucleus.log
 artifacts
-cucumber_context.json
-hyperexecuteupdate
 node_modules/
 test-results/
 playwright-report/
 loadtest-html-report/
-LT
-LT.exe
+.claude/

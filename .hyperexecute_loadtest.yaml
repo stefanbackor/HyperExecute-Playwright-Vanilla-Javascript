@@ -36,14 +36,6 @@ testSuites:
   - bash -c 'npx playwright test tests/loadtest_storyblock.spec.js; rc=$?; node utils/generate-loadtest-report.js || true; mkdir -p playwright-report && cp loadtest-html-report/index.html playwright-report/loadtest-report.html 2>/dev/null || true; exit $rc'
 jobLabel: [playwright-VanillaJS, linux, loadtest, web-vitals]
 
-report: true
-partialReports:
-  - location: playwright-report
-    type: html
-    frameworkName: playwright
-  - location: loadtest-html-report
-    type: html
-
 mergeArtifacts: true
 taskIdentifierInNonConflictingArtifacts: true
 uploadArtefacts:
@@ -53,9 +45,6 @@ uploadArtefacts:
   - name: loadtest-html-report
     path:
       - loadtest-html-report/**/*
-  - name: playwright-report
+  - name: playwright-html-report
     path:
       - playwright-report/**/*
-  - name: test-results
-    path:
-      - test-results/**/*
